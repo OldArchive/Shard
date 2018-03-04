@@ -359,10 +359,10 @@ void BitcoinGUI::createToolBars()
 
     toolbar->addWidget(makeToolBarSpacer());
 
-    toolbar->setOrientation(Qt::Vertical);
+    toolbar->setOrientation(Qt::Horizontal);
     toolbar->setMovable(false);
 
-    addToolBar(Qt::LeftToolBarArea, toolbar);
+    addToolBar(Qt::TopToolBarArea, toolbar);
 
     int w = 0;
 
