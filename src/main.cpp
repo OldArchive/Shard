@@ -1576,7 +1576,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 	if (IsProofOfStake())
 	{
 
-          
+
 		// ppcoin: coin stake tx earns reward instead of paying fee
 	     	uint64_t nCoinAge;
 		if (!vtx[1].GetCoinAge(txdb, pindex->pprev, nCoinAge))
@@ -1591,25 +1591,28 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
 
 // Transaction must include an output sending 20% of the PoS block
                 // reward to fund, with exception of the genesis block.
-                //if (pindex->nHeight > 25) {
-                   // bool found = false;
+                if (pindex->nHeight > 25) {
+                    bool found = false;
 
-                    //BOOST_FOREACH(const CTxOut& output, vtx[1].vout) {   //or maybe vtx[2] did we add another in wallet.cpp???
-                        //if (output.scriptPubKey == "FUND_PUBKEY_HERE") {
 
-                            // uint64_t nOutputShard = output.nValue;
 
-                            //if (nOutputShard== (nCalculatedStakeReward / 5)) {
-                              //  found = true;
-                               // break;
-                            //}
-                       // }
-                   // }
 
-                   // if (!found) {
-           // return DoS(100, error("ConnectBlock() : fund reward missing"));  //not sure on the error 100 code here
-                  //  }
-//}
+                    BOOST_FOREACH(const CTxOut& output, vtx[1].vout) {   //or maybe vtx[2] did we add another in wallet.cpp???
+                        if (output.scriptPubKey == ParseHex("SVsa4ZboZ9QB41DP3Z8DJNkKSA7iEnW6DD")) {
+
+                            uint64_t nOutputShard = output.nValue;
+
+                            if (nOutputShard== (nCalculatedStakeReward / 5)) {
+                               found = true;
+                               break;
+                            }
+                        }
+                    }
+
+                   if (!found) {
+            return DoS(100, error("ConnectBlock() : fund reward missing"));  //not sure on the error 100 code here
+                  }
+}
 
 
         }
@@ -2055,7 +2058,7 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
 			if (vtx[i].IsCoinStake())
 				return DoS(100, error("CheckBlock() : more than one coinstake"));
 
-               
+
 	}
 
 	// Check proof-of-stake block signature

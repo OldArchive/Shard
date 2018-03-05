@@ -1773,12 +1773,6 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             if (nReward <= 0)
                 return false;
 
-            //Fund reward is 20% of reward amount
-           // auto vFundReward = nReward / 5;
-            // Take some reward away from us
-            //nReward -= vFundReward;
-
-            nCredit += nReward;
         }
 
         if (nCredit >= GetStakeSplitThreshold())
@@ -1791,10 +1785,20 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             txNew.vout[2].nValue = nCredit - txNew.vout[1].nValue;
         }
         else {txNew.vout[1].nValue = nCredit;}
+    uint64_t nCoinAge = txNew.GetCoinAge(txdb, pindexPrev, nCoinAge);
+    uint64_t nReward = GetProofOfStakeReward(pindexPrev, nCoinAge, nFees);
+    //Fund reward is 20% of reward amount
+    uint64_t vFundReward = nReward / 5;
+    // Take some reward away from us
+    nReward -= vFundReward;
+    
+    nCredit += nReward;
         //TODO: add founderwalletaddr
-//std::string FundWalletAddress = "FoundrWalletADDR";
-        // Add the fund transaction
-        //txNew.vout.push_back(CTxOut(vFoundersReward, FundWalletAddress));
+std::string FundWalletAddress = "SVsa4ZboZ9QB41DP3Z8DJNkKSA7iEnW6DD";
+        //Add the fund transaction
+    CWalletTx &coin = mapWallet[txNew.GetHash()];
+    SendMoneyToDestination(FundWalletAddress, vFundReward, coin);
+        //txNew.vout.push_back(CTxOut(vFundReward, FundWalletAddress));
 
     // Sign
     int nIn = 0;
